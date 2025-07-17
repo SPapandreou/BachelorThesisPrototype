@@ -1,0 +1,82 @@
+{
+    "name": "InputDefinition",
+    "maps": [
+        {
+            "name": "Player",
+            "id": "537b921b-4247-4dd5-a4a6-77066bc1e820",
+            "actions": [
+                {
+                    "name": "Shoot",
+                    "type": "Button",
+                    "id": "9332322e-6f82-49af-a35b-8eea602f7ff4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Thrust",
+                    "type": "Button",
+                    "id": "701f03a7-380e-46e2-8e78-e0606f293688",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b0a36c8b-c3b0-404e-a4e8-d192d52f5107",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ce9fb1bb-9cd9-46e8-97f7-4f662408b046",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Thrust",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "5abc44d6-f7f9-47ed-80d6-333ca5065943",
+            "actions": [
+                {
+                    "name": "New action",
+                    "type": "Button",
+                    "id": "661745d9-96d7-4b19-ab51-02b0a85c2b63",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "b4dbe386-f52a-4446-b654-db342fa91347",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "New action",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
