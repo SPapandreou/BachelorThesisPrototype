@@ -13,6 +13,8 @@ namespace OOP.PlayerLogic.Controller
         private bool _isThrusting;
         private Vector2 _thrust;
 
+        private Vector2 _velocity;
+
         public Accelerator(Player player, PlayerInputListener playerInputListener)
         {
             _player = player;
@@ -27,16 +29,19 @@ namespace OOP.PlayerLogic.Controller
 
         public void Tick()
         {
-            if (_isThrusting && _thrust.magnitude < _player.maxThrust)
+            if (_isThrusting)
             {
-                _thrust += (Vector2)_player.transform.right * _player.acceleration * Time.deltaTime;
+                _velocity += (Vector2)_player.transform.right * _player.acceleration * Time.deltaTime;
             }
+            
+            var speed = _velocity.magnitude;
+            speed -= _player.drag * Time.deltaTime;
+            speed = Mathf.Max(speed, 0);
+            speed = Mathf.Min(speed, _player.maxSpeed);
+            _velocity = _velocity.normalized * speed;
 
-
-            _thrust *= _player.thrustDampening;
-
-            if (Mathf.Approximately(_thrust.magnitude, 0f)) return;
-            _player.transform.position += (Vector3)_thrust * Time.deltaTime;
+            if (Mathf.Approximately(speed, 0f)) return;
+            _player.transform.position += (Vector3)_velocity * Time.deltaTime;
         }
     }
 }

@@ -4,9 +4,9 @@ namespace OOP.PlayerLogic
 {
     public class Player : MonoBehaviour
     {
-        public float maxThrust;
+        public float maxSpeed;
         public float acceleration;
-        public float thrustDampening;
+        public float drag;
         
         public float turnSpeed;
     }
