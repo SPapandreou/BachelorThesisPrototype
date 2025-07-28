@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Pancake_Orange_0: 8128486830081093233
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

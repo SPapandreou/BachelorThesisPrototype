@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Insurgent_Blue_0: 5760673900026365716
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

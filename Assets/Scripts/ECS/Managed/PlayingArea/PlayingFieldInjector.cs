@@ -1,5 +1,5 @@
 ﻿using ECS.Components.PlayingArea;
-using Latios;
+using ECS.ECSExtensions;
 using Unity.Entities;
 using UnityEngine;
 
@@ -12,8 +12,8 @@ namespace ECS.Managed.PlayingArea
         private void Awake()
         {
             _bounds = new Rect(transform.position - transform.localScale/2, transform.localScale);
-            var world = World.DefaultGameObjectInjectionWorld as LatiosWorld;
-            world!.worldBlackboardEntity.AddComponentData(new PlayingFieldData
+            
+            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayingFieldData
             {
                 Bounds = _bounds,
             });

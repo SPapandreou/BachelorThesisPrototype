@@ -1,5 +1,5 @@
 ﻿using ECS.Components.Input;
-using Latios;
+using ECS.ECSExtensions;
 using Unity.Entities;
 using UnityEngine;
 
@@ -9,10 +9,10 @@ namespace ECS.Managed.PlayerLogic
     {
         private void LateUpdate()
         {
-            var world = World.DefaultGameObjectInjectionWorld as LatiosWorld;
-            if (!world!.worldBlackboardEntity.HasComponent<PlayerData>()) return;
-            
-            transform.position = world!.worldBlackboardEntity.GetComponentData<PlayerData>().PlayerPosition;
+            if (World.DefaultGameObjectInjectionWorld.HasBlackboardComponent<PlayerData>()) return;
+
+            transform.position = World.DefaultGameObjectInjectionWorld.GetBlackboardComponent<PlayerData>()
+                .PlayerPosition;
         }
     }
 }

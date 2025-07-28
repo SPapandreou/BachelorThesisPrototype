@@ -1,7 +1,7 @@
 ﻿using ECS.Components.EnemyAI;
 using ECS.Components.Input;
 using ECS.Components.Movement;
-using Latios;
+using ECS.ECSExtensions;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics.Systems;
@@ -9,8 +9,8 @@ using Unity.Transforms;
 
 namespace ECS.Systems.Movement
 {
-    [UpdateInGroup(typeof(PhysicsSystemGroup))]
-    [UpdateBefore(typeof(ThrusterLogic))]
+    // [UpdateInGroup(typeof(PhysicsSystemGroup))]
+    // [UpdateBefore(typeof(ThrusterLogic))]
     public partial struct FollowPlayer : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -18,12 +18,12 @@ namespace ECS.Systems.Movement
             state.RequireForUpdate<ThrusterData>();
             state.RequireForUpdate<FollowPlayerData>();
             state.RequireForUpdate<LocalTransform>();
+            state.RequireForUpdate<BlackboardTag>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            var playerPosition = state.GetLatiosWorldUnmanaged().worldBlackboardEntity.GetComponentData<PlayerData>()
-                .PlayerPosition;
+            var playerPosition = state.GetBlackboardComponent<PlayerData>().PlayerPosition;
 
             state.Dependency =
                 new FollowPlayerJob { PlayerPosition = playerPosition }.ScheduleParallel(state.Dependency);

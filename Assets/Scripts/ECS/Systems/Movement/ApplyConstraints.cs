@@ -7,9 +7,9 @@ using Unity.Transforms;
 
 namespace ECS.Systems.Movement
 {
-    [UpdateInGroup(typeof(PhysicsSystemGroup))]
-    [UpdateAfter(typeof(PhysicsSimulationGroup))]
-    [UpdateBefore(typeof(ExportPhysicsWorld))]
+    // [UpdateInGroup(typeof(PhysicsSystemGroup))]
+    // [UpdateAfter(typeof(PhysicsSimulationGroup))]
+    // [UpdateBefore(typeof(ExportPhysicsWorld))]
     [BurstCompile]
     public partial struct ApplyConstraints : ISystem
     {

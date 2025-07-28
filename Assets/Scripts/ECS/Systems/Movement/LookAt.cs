@@ -1,10 +1,6 @@
-﻿using ECS.Components.EnemyAI;
-using ECS.Components.Input;
-using ECS.Components.Movement;
-using Latios;
+﻿using ECS.Components.Movement;
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Jobs;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;

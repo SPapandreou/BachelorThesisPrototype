@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Imperial_Orange_0: 21063846452402265
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

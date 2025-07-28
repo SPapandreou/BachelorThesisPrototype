@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Spitfire_Red_0: 6451457215363900
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1,15 +1,10 @@
 {
-    "name": "Systems",
+    "name": "ECSExtensions",
     "rootNamespace": "",
     "references": [
         "GUID:734d92eba21c94caba915361bd5ac177",
         "GUID:e0cd26848372d4e5c891c569017e11f1",
-        "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:a79e2c122c3d9424189f8513979d3b7f",
-        "GUID:2665a8d13d1b3f18800f46e256720795",
-        "GUID:63afb046c8423dd448ae7aba042ea63d",
-        "GUID:a5baed0c9693541a5bd947d336ec7659",
-        "GUID:98b038f4826491040b47aff72f5d8207"
+        "GUID:8819f35a0fc84499b990e90a4ca1911f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

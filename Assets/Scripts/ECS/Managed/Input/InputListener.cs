@@ -1,7 +1,6 @@
-﻿using System;
-using Controller;
+﻿using Controller;
 using ECS.Components.Input;
-using Latios;
+using ECS.ECSExtensions;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -20,8 +19,7 @@ namespace ECS.Managed.Input
 
         private void Awake()
         {
-            var latiosWorld = World.DefaultGameObjectInjectionWorld as LatiosWorld;
-            latiosWorld!.worldBlackboardEntity.AddComponent<PlayerInputData>();
+            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayerInputData());
             
             _inputDefinition = new InputDefinition();
             _inputDefinition.Player.AddCallbacks(this);
@@ -41,8 +39,7 @@ namespace ECS.Managed.Input
         {
             _mouseInput = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             
-            var latiosWorld = World.DefaultGameObjectInjectionWorld as LatiosWorld;
-            latiosWorld!.worldBlackboardEntity.SetComponentData(new PlayerInputData
+            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayerInputData
             {
                 IsShooting = _isShooting,
                 IsThrusting = _isThrusting,

@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Challenger_Green_0: 3528899404121691084
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

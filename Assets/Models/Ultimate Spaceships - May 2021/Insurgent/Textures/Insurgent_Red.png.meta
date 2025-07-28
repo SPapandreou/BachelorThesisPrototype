@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Insurgent_Red_0: -6028871767638502022
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -134,7 +134,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Zenith_Red_0: -3476190242048118210
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

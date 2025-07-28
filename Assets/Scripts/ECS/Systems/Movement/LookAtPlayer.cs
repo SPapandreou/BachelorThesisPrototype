@@ -1,7 +1,7 @@
 ﻿using ECS.Components.EnemyAI;
 using ECS.Components.Input;
 using ECS.Components.Movement;
-using Latios;
+using ECS.ECSExtensions;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -16,12 +16,12 @@ namespace ECS.Systems.Movement
         {
             state.RequireForUpdate<LookAtPlayerTag>();
             state.RequireForUpdate<LookAtData>();
+            state.RequireForUpdate<BlackboardTag>();
         }
 
         public void OnUpdate(ref SystemState state)
         {
-            var playerPosition = state.GetLatiosWorldUnmanaged().worldBlackboardEntity.GetComponentData<PlayerData>()
-                .PlayerPosition;
+            var playerPosition = state.GetBlackboardComponent<PlayerData>().PlayerPosition;
 
             state.Dependency =
                 new LookAtPlayerJob { PlayerPosition = playerPosition }.ScheduleParallel(state.Dependency);
