@@ -8,6 +8,7 @@ namespace ECS.Authoring.Movement
     {
         public float thrustForce;
         public float maxSpeed;
+        public float turnSpeed;
 
         public class ThrusterDataBaker : Baker<ThrusterDataAuthoring>
         {
@@ -18,7 +19,8 @@ namespace ECS.Authoring.Movement
                 AddComponent(entity, new ThrusterData
                 {
                     ThrustForce = authoring.thrustForce,
-                    MaxSpeed = authoring.maxSpeed
+                    MaxSpeed = authoring.maxSpeed,
+                    TurnSpeed =  authoring.turnSpeed
                 });
             }
         }

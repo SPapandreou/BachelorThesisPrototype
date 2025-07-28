@@ -6,5 +6,7 @@ namespace ECS.Components.Movement
     {
         public float ThrustForce;
         public float MaxSpeed;
+        public float TurnSpeed;
+        public bool IsFiring;
     }
 }

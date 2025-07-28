@@ -1,10 +1,14 @@
 ﻿using ECS.Components.Input;
 using Latios;
-using Latios.Transforms;
 using Unity.Entities;
+using Unity.Physics.Systems;
+using Unity.Transforms;
 
 namespace ECS.Systems.PlayerSystems
 {
+    [UpdateInGroup(typeof(PhysicsSystemGroup))]
+    [UpdateAfter(typeof(PhysicsSimulationGroup))]
+    [UpdateBefore(typeof(ExportPhysicsWorld))]
     public partial struct UpdatePlayerPosition : ISystem
     {
         public void OnCreate(ref SystemState state)
@@ -15,8 +19,8 @@ namespace ECS.Systems.PlayerSystems
         public void OnUpdate(ref SystemState state)
         {
             var playerData = state.GetLatiosWorldUnmanaged().worldBlackboardEntity.GetComponentData<PlayerData>();
-            var transform = SystemAPI.GetComponent<WorldTransform>(playerData.PlayerEntity);
-            playerData.PlayerPosition = transform.position;
+            var transform = SystemAPI.GetComponent<LocalTransform>(playerData.PlayerEntity);
+            playerData.PlayerPosition = transform.Position;
             
             state.GetLatiosWorldUnmanaged().worldBlackboardEntity.SetComponentData(playerData);
         }
