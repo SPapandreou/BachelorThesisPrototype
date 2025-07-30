@@ -1,5 +1,4 @@
-﻿using ECS.Components.PlayingArea;
-using ECS.ECSExtensions;
+﻿using ECS.Data.PlayingArea;
 using Unity.Entities;
 using UnityEngine;
 
@@ -8,14 +7,16 @@ namespace ECS.Managed.PlayingArea
     public class PlayingFieldInjector : MonoBehaviour
     {
         private Rect _bounds;
-        
+
         private void Awake()
         {
-            _bounds = new Rect(transform.position - transform.localScale/2, transform.localScale);
-            
-            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayingFieldData
+            _bounds = new Rect(transform.position - transform.localScale / 2, transform.localScale);
+            var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+
+            var entity = manager.CreateEntity();
+            manager.SetComponentData(entity, new PlayingFieldData
             {
-                Bounds = _bounds,
+                Bounds = _bounds
             });
         }
     }

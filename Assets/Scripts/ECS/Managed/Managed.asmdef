@@ -8,11 +8,13 @@
         "GUID:e0cd26848372d4e5c891c569017e11f1",
         "GUID:a79e2c122c3d9424189f8513979d3b7f",
         "GUID:d8b63aba1907145bea998dd612889d6b",
-        "GUID:98b038f4826491040b47aff72f5d8207"
+        "GUID:d04eb9c554ad44ceab303cecf0c0cf82",
+        "GUID:4ae87b00b73cb2d44a9727398a842bef",
+        "GUID:2665a8d13d1b3f18800f46e256720795"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
-    "allowUnsafeCode": false,
+    "allowUnsafeCode": true,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,

@@ -1,5 +1,4 @@
-﻿using ECS.Components.Input;
-using ECS.ECSExtensions;
+﻿using ECS.Data.Input;
 using Unity.Entities;
 using UnityEngine;
 
@@ -7,11 +6,19 @@ namespace ECS.Managed.PlayerLogic
 {
     public class PlayerTracker : MonoBehaviour
     {
+        private EntityQuery _playerDataQuery;
+
+        private void Awake()
+        {
+            _playerDataQuery =
+                World.DefaultGameObjectInjectionWorld.EntityManager.CreateEntityQuery(typeof(PlayerData));
+        }
+
         private void LateUpdate()
         {
-            if (World.DefaultGameObjectInjectionWorld.HasBlackboardComponent<PlayerData>()) return;
+            if (_playerDataQuery.CalculateEntityCount() == 0) return;
 
-            transform.position = World.DefaultGameObjectInjectionWorld.GetBlackboardComponent<PlayerData>()
+            transform.position = _playerDataQuery.GetSingleton<PlayerData>()
                 .PlayerPosition;
         }
     }

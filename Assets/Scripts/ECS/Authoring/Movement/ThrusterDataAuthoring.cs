@@ -1,4 +1,4 @@
-﻿using ECS.Components.Movement;
+﻿using ECS.Data.Movement;
 using Unity.Entities;
 using UnityEngine;
 

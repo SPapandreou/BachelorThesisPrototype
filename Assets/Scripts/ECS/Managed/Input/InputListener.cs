@@ -1,6 +1,5 @@
 ﻿using Controller;
-using ECS.Components.Input;
-using ECS.ECSExtensions;
+using ECS.Data.Input;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,12 +13,17 @@ namespace ECS.Managed.Input
         private bool _isShooting;
         private bool _isThrusting;
         private Vector3 _mouseInput;
+
+        private Entity _inputDataEntity;
         
         private InputDefinition _inputDefinition;
 
         private void Awake()
         {
-            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayerInputData());
+            var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
+            _inputDataEntity = manager.CreateEntity();
+            manager.AddComponent<PlayerInputData>(_inputDataEntity);
+            
             
             _inputDefinition = new InputDefinition();
             _inputDefinition.Player.AddCallbacks(this);
@@ -37,9 +41,10 @@ namespace ECS.Managed.Input
 
         private void Update()
         {
+            var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
             _mouseInput = mainCamera.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             
-            World.DefaultGameObjectInjectionWorld.SetBlackboardComponent(new PlayerInputData
+            manager.SetComponentData(_inputDataEntity, new PlayerInputData
             {
                 IsShooting = _isShooting,
                 IsThrusting = _isThrusting,

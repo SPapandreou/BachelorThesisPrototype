@@ -1,4 +1,4 @@
-﻿using ECS.Components.EnemyAI;
+﻿using ECS.Data.EnemyAI;
 using Unity.Entities;
 using UnityEngine;
 

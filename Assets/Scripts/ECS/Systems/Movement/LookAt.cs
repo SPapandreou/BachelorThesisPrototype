@@ -1,9 +1,10 @@
-﻿using ECS.Components.Movement;
+﻿using ECS.Data.Movement;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 namespace ECS.Systems.Movement
 {
@@ -30,12 +31,12 @@ namespace ECS.Systems.Movement
                 in LookAtData data)
             {
                 var lookDirection = math.normalize(math.rotate(transform.Rotation, math.right())).xy;
-                var targetDirection = (data.Target - transform.Position).xy;
+                var targetDirection = math.normalize(data.Target - transform.Position).xy;
 
                 float signedAngle = math.atan2(targetDirection.y, targetDirection.x) -
                                     math.atan2(lookDirection.y, lookDirection.x);
                 signedAngle = math.atan2(math.sin(signedAngle), math.cos(signedAngle));
-
+                
                 if (math.abs(signedAngle) > 0.01f)
                 {
                     velocity.Angular.z = signedAngle * thruster.TurnSpeed;
