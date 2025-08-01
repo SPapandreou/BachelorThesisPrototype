@@ -1,0 +1,13 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/HudStyle.uss?fileID=7433441132597879392&amp;guid=bd118f8ce59dd9c4cae87b95426922e6&amp;type=3#HudStyle" />
+    <engine:VisualElement name="RootContainer" style="flex-grow: 1;">
+        <engine:VisualElement name="Header" style="flex-grow: 0; flex-direction: row;">
+            <engine:Label text="FPS: " />
+            <engine:Label text="Label" name="FpsLabel" />
+            <engine:Label text="Entities:" style="margin-left: 10px;" />
+            <engine:Label text="Label" name="EntitiesLabel" />
+            <engine:Label text="Average FPS:" style="margin-left: 10px;" />
+            <engine:Label text="Label" name="AverageFpsLabel" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

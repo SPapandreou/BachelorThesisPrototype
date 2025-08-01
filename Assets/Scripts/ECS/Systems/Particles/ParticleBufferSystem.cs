@@ -1,9 +1,10 @@
-﻿using ECS.Data.Projectiles;
+﻿using ECS.Data.Particles;
+using ECS.Data.Projectiles;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Jobs;
 
-namespace ECS.Systems.VFX
+namespace ECS.Systems.Particles
 {
     public partial struct ParticleBufferSystem : ISystem
     {
@@ -21,7 +22,7 @@ namespace ECS.Systems.VFX
         public void ResetBuffer()
         {
             ParticleBuffer = new NativeList<RawParticleSpawnData>(Capacity,Allocator.Persistent);
-            //KillBuffer = new NativeList<RawParticleKillData>(Capacity, Allocator.Persistent);
+            KillBuffer = new NativeList<RawParticleKillData>(Capacity, Allocator.Persistent);
         }
 
         public void OnDestroy(ref SystemState state)

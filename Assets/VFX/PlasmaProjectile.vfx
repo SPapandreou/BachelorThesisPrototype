@@ -58,8 +58,8 @@ MonoBehaviour:
   m_CustomAttributes:
   - {fileID: 114350483966674986}
   m_ParameterInfo:
-  - name: SpawnBufferSize
-    path: SpawnBufferSize
+  - name: SpawnBufferCount
+    path: SpawnBufferCount
     tooltip: 
     space: -1
     spaceable: 0
@@ -74,8 +74,8 @@ MonoBehaviour:
     max: Infinity
     enumValues: []
     descendantCount: 0
-  - name: KillBufferSize
-    path: KillBufferSize
+  - name: KillBufferCount
+    path: KillBufferCount
     tooltip: 
     space: -1
     spaceable: 0
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 114350483966674979}
-  m_ExposedName: SpawnBufferSize
+  m_ExposedName: SpawnBufferCount
   m_Exposed: 1
   m_Order: 0
   m_Category: 
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_InputSlots: []
   m_OutputSlots:
   - {fileID: 114350483966674981}
-  m_ExposedName: KillBufferSize
+  m_ExposedName: KillBufferCount
   m_Exposed: 1
   m_Order: 1
   m_Category: 
@@ -488,7 +488,7 @@ MonoBehaviour:
   m_Description: 
   m_AttributeName: Id
   m_Type: 5
-  m_IsExpanded: 0
+  m_IsExpanded: 1
 --- !u!114 &114350483966674987
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2122,7 +2122,7 @@ MonoBehaviour:
         PublicKeyToken=b77a5c561934e089
   m_Direction: 0
   m_LinkedSlots:
-  - {fileID: 114350483966675072}
+  - {fileID: 114350483966675065}
 --- !u!114 &114350483966675059
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2279,6 +2279,7 @@ MonoBehaviour:
   m_Direction: 1
   m_LinkedSlots:
   - {fileID: 114350483966675070}
+  - {fileID: 114350483966675046}
 --- !u!114 &114350483966675066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2408,8 +2409,7 @@ MonoBehaviour:
       m_SerializableType: System.UInt32, mscorlib, Version=4.0.0.0, Culture=neutral,
         PublicKeyToken=b77a5c561934e089
   m_Direction: 1
-  m_LinkedSlots:
-  - {fileID: 114350483966675046}
+  m_LinkedSlots: []
 --- !u!114 &114350483966675073
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2534,7 +2534,8 @@ MonoBehaviour:
   m_OperatorName: Custom HLSL
   m_HLSLCode: "bool ShouldKeepIdAlive(in uint particleId, in StructuredBuffer<uint>
     idsToKill, int idsToKillSize)\n{\n   for(int i = 0;i < idsToKillSize; i++)\n  
-    {\n      return false;\n   }\n   return true;\n}"
+    {\n      if(idsToKill.Load(i) == particleId)\n      {\n\treturn false;\n     
+    }\n      \n   }\n   return true;\n}"
   m_ShaderFile: {fileID: 0}
   m_AvailableFunctions:
     selection: ShouldKeepIdAlive

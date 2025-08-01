@@ -1,8 +1,8 @@
-﻿using ECS.Data.Projectiles;
+﻿using ECS.Data.Particles;
+using ECS.Data.Projectiles;
 using ECS.Data.Weapons;
 using ECS.Systems.Particles;
 using ECS.Systems.Projectiles;
-using ECS.Systems.VFX;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -88,6 +88,7 @@ namespace ECS.Systems.Weapons
 
                 ParticleBuffer.AddNoResize(new RawParticleSpawnData
                 {
+                    ParticleType = ParticleType.Managed,
                     VfxId = weapon.ParticleHash,
                     Position = parentTransform.Position + math.rotate(parentTransform.Rotation, transform.Position),
                     Angle = angle,
@@ -96,7 +97,8 @@ namespace ECS.Systems.Weapons
                     Hitbox = weapon.Hitbox,
                     HitboxLayer = weapon.HitboxLayer,
                     Size = weapon.ParticleSize,
-                    Damage = weapon.Damage
+                    Damage = weapon.Damage,
+                    CollisionLayer = weapon.CollisionLayer
                 });
             }
         }

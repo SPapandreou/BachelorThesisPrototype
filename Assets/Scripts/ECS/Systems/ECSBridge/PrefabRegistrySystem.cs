@@ -1,58 +1,43 @@
-﻿using System;
-using ECS.Data.ECSBridge;
+﻿using ECS.Data.ECSBridge;
 using Unity.Collections;
 using Unity.Entities;
 
 namespace ECS.Systems.ECSBridge
 {
-    public partial class PrefabRegistrySystem : SystemBase
+    public partial struct PrefabRegistrySystem : ISystem
     {
-        public NativeHashMap<Hash128, Entity> Registry => _lookup;
-        
-        private NativeHashMap<Hash128, Entity> _lookup;
-        private bool _initialized;
         private EntityQuery _query;
 
-        public Entity GetEntity(Hash128 gameObjectId)
+        public void OnCreate(ref SystemState state)
         {
-            if (!_lookup.TryGetValue(gameObjectId, out var entity))
-            {
-                throw new InvalidOperationException("Prefab not registered in registry.");
-            }
-
-            return entity;
-        }
-        
-        protected override void OnCreate()
-        {
-            _query = EntityManager.CreateEntityQuery(ComponentType.ReadOnly<PrefabRegistryEntry>());
-            RequireForUpdate(_query);
+            _query = state.GetEntityQuery(ComponentType.ReadOnly<PrefabRegistryEntry>());
+            state.RequireForUpdate(_query);
         }
 
-        protected override void OnStartRunning()
+        public void OnUpdate(ref SystemState state)
         {
-            if (_initialized) return;
-            _initialized = true;
-            
             var buffer = _query.GetSingletonBuffer<PrefabRegistryEntry>();
-            if (buffer.Length == 0) return;
-            
-            _lookup = new NativeHashMap<Hash128, Entity>(buffer.Length, Allocator.Persistent);
+            NativeHashMap<Hash128, Entity> prefabRegistry =
+                new NativeHashMap<Hash128, Entity>(128, Allocator.Persistent);
+
             foreach (var entry in buffer)
             {
-                _lookup[entry.GameObjectId] = entry.Entity;
+                prefabRegistry[entry.GameObjectId] = entry.Entity;
             }
-            
+
+            var entity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponent<PrefabRegistryData>(entity);
+            state.EntityManager.SetComponentData(entity, new PrefabRegistryData
+            {
+                PrefabRegistry = prefabRegistry
+            });
+            state.Enabled = false;
         }
 
-        protected override void OnUpdate()
+        public void OnDestroy(ref SystemState state)
         {
-        }
-
-        protected override void OnDestroy()
-        {
-            if (!_lookup.IsCreated) return;
-            _lookup.Dispose();
+            var registry = SystemAPI.GetSingleton<PrefabRegistryData>();
+            registry.PrefabRegistry.Dispose();
         }
     }
 }

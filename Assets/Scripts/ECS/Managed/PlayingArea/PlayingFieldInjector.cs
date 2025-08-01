@@ -14,6 +14,7 @@ namespace ECS.Managed.PlayingArea
             var manager = World.DefaultGameObjectInjectionWorld.EntityManager;
 
             var entity = manager.CreateEntity();
+            manager.AddComponent<PlayingFieldData>(entity);
             manager.SetComponentData(entity, new PlayingFieldData
             {
                 Bounds = _bounds

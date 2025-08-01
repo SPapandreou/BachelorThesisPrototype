@@ -19,6 +19,7 @@ namespace ECS.Authoring.ECSBridge
 
                 foreach (var prefab in authoring.prefabs)
                 {
+                    if (prefab == null) continue;
                     var prefabEntity = GetEntity(prefab.gameObject, TransformUsageFlags.None);
                     buffer.Add(new PrefabRegistryEntry
                     {

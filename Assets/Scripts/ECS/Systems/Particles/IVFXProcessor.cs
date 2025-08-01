@@ -1,7 +1,8 @@
-﻿using ECS.Data.Projectiles;
+﻿using ECS.Data.Particles;
+using ECS.Data.Projectiles;
 using Unity.Collections;
 
-namespace ECS.Systems.VFX
+namespace ECS.Systems.Particles
 {
     public interface IVFXProcessor
     {

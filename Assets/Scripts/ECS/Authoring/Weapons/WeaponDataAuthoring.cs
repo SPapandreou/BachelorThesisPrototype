@@ -16,6 +16,7 @@ namespace ECS.Authoring.Weapons
         public float damage;
         public HitboxType hitbox;
         public LayerMask hitboxLayer;
+        public LayerMask collisionLayer;
         public float hitboxSize;
         
         public class WeaponDataBaker : Baker<WeaponDataAuthoring>
@@ -37,6 +38,7 @@ namespace ECS.Authoring.Weapons
                     Damage = authoring.damage,
                     Hitbox = authoring.hitbox,
                     HitboxLayer = authoring.hitboxLayer,
+                    CollisionLayer = authoring.collisionLayer,
                     HitboxSize = authoring.hitboxSize
                 });
             }

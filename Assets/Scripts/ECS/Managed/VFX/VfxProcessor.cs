@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading;
+using ECS.Data.Particles;
 using ECS.Data.Projectiles;
 using ECS.Managed.ECSBridge;
 using ECS.Systems.Particles;
-using ECS.Systems.VFX;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
@@ -19,27 +18,31 @@ namespace ECS.Managed.VFX
 {
     public class VfxProcessor : MonoBehaviour, IVFXProcessor
     {
-        public List<GameObject> graphs;
+        public List<GameObject> initKillGraphs;
         public List<GameObject> initOnlyGraphs;
 
         public int bufferSize = 1000;
+        public int bufferingLevel = 3;
 
-        private readonly Dictionary<Hash128, VisualEffect> _graphLookup = new();
-        private readonly Dictionary<Hash128, GraphicsBuffer> _spawnBufferLookup = new();
-        private readonly Dictionary<Hash128, GraphicsBuffer> _killBufferLookup = new();
-        private readonly Dictionary<Hash128, NativeReference<int>> _spawnBufferSize = new();
-        private readonly Dictionary<Hash128, NativeReference<int>> _killBufferSize = new();
+        private readonly List<VisualEffect> _initGraphs = new();
+        private readonly List<VisualEffect> _killGraphs = new();
+
+        private readonly Dictionary<VisualEffect, Hash128> _hashLookup = new();
+        
+        private BufferManager<ParticleInitData> _spawnBufferManager;
+        private BufferManager<ParticleKillData> _killBufferManager;
 
         private bool _initialized;
 
         private JobHandle _handles;
-        private bool _spawnBufferLocked;
-        private bool _killBufferLocked;
+
+        private readonly Queue<IGraphicsBufferHandle> _processThisFrame = new();
+        private readonly Queue<IGraphicsBufferHandle> _processNextFrame = new();
 
 
         private void Awake()
         {
-            foreach (var graph in graphs)
+            foreach (var graph in initKillGraphs)
             {
                 if (!graph.TryGetComponent<VisualEffect>(out var graphInstance))
                 {
@@ -50,21 +53,10 @@ namespace ECS.Managed.VFX
                 {
                     throw new InvalidOperationException("Registered Graph has no GameObjectId component.");
                 }
-
-                _graphLookup[gameObjectId.hash] = graphInstance;
-
-                _spawnBufferLookup[gameObjectId.hash] = new GraphicsBuffer(GraphicsBuffer.Target.Structured,
-                    GraphicsBuffer.UsageFlags.LockBufferForWrite, bufferSize,
-                    Marshal.SizeOf<ParticleInitData>());
-                graphInstance.SetGraphicsBuffer("SpawnBuffer", _spawnBufferLookup[gameObjectId.hash]);
-
-                _killBufferLookup[gameObjectId.hash] = new GraphicsBuffer(GraphicsBuffer.Target.Structured,
-                    GraphicsBuffer.UsageFlags.LockBufferForWrite, bufferSize,
-                    Marshal.SizeOf<ParticleKillData>());
-                _graphLookup[gameObjectId.hash].SetGraphicsBuffer("KillBuffer", _killBufferLookup[gameObjectId.hash]);
-
-                _spawnBufferSize[gameObjectId.hash] = new NativeReference<int>(Allocator.Persistent);
-                _killBufferSize[gameObjectId.hash] = new NativeReference<int>(Allocator.Persistent);
+                
+                _hashLookup[graphInstance] = gameObjectId.hash;
+                _initGraphs.Add(graphInstance);
+                _killGraphs.Add(graphInstance);
             }
 
             foreach (var graph in initOnlyGraphs)
@@ -78,15 +70,15 @@ namespace ECS.Managed.VFX
                 {
                     throw new InvalidOperationException("Registered Graph has no GameObjectId component.");
                 }
-
-                _graphLookup[gameObjectId.hash] = graphInstance;
-
-                _spawnBufferLookup[gameObjectId.hash] = new GraphicsBuffer(GraphicsBuffer.Target.Structured, bufferSize,
-                    Marshal.SizeOf<ParticleInitData>());
-                graphInstance.SetGraphicsBuffer("SpawnBuffer", _spawnBufferLookup[gameObjectId.hash]);
-
-                _spawnBufferSize[gameObjectId.hash] = new NativeReference<int>(Allocator.Persistent);
+                
+                _hashLookup[graphInstance] =  gameObjectId.hash;
+                _initGraphs.Add(graphInstance);
             }
+
+            _spawnBufferManager = new BufferManager<ParticleInitData>(initKillGraphs.Count + initOnlyGraphs.Count,
+                bufferingLevel, bufferSize, "SpawnBuffer", "SpawnBufferCount");
+            _killBufferManager = new BufferManager<ParticleKillData>(initKillGraphs.Count, bufferingLevel, bufferSize,
+                "KillBuffer", "KillBufferCount");
         }
 
         private void Update()
@@ -107,107 +99,78 @@ namespace ECS.Managed.VFX
 
             _handles = new JobHandle();
 
-            if (_spawnBufferLocked)
+            foreach (var bufferHandle in _processThisFrame)
             {
-                foreach (var (hash, counter) in _spawnBufferSize)
-                {
-                    _spawnBufferLookup[hash].UnlockBufferAfterWrite<ParticleInitData>(counter.Value);
-                    _graphLookup[hash].SetInt("SpawnBufferSize", counter.Value);
-                }
-                
-                _spawnBufferLocked = false;
+                bufferHandle.Unlock();
+                bufferHandle.Upload();
             }
+            _processThisFrame.Clear();
 
-            if (_killBufferLocked)
+            foreach (var bufferHandle in _processNextFrame)
             {
-                foreach (var (hash, counter) in _killBufferSize)
-                {
-                    _killBufferLookup[hash].UnlockBufferAfterWrite<ParticleKillData>(counter.Value);
-                    _graphLookup[hash].SetInt("KillBufferSize", counter.Value);
-                }
-
-                _killBufferLocked = false;
+                bufferHandle.Unlock();
+                _processThisFrame.Enqueue(bufferHandle);
             }
+            _processNextFrame.Clear();
         }
 
         private void OnDestroy()
         {
-            foreach (var buffer in _spawnBufferLookup.Values)
-            {
-                buffer.Release();
-                buffer.Dispose();
-            }
-
-            foreach (var buffer in _killBufferLookup.Values)
-            {
-                buffer.Release();
-                buffer.Dispose();
-            }
-
-            foreach (var counter in _spawnBufferSize.Values)
-            {
-                counter.Dispose();
-            }
-
-            foreach (var counter in _killBufferSize.Values)
-            {
-                counter.Dispose();
-            }
+            _spawnBufferManager.Dispose();
+            _killBufferManager.Dispose();
         }
 
         public void FillSpawnBuffer(ref NativeList<RawParticleSpawnData> spawnData)
         {
             var handles = new JobHandle();
 
-            foreach (var (hash, buffer) in _spawnBufferLookup)
+            foreach (var graph in _initGraphs)
             {
-                var counter = _spawnBufferSize[hash];
-                counter.Value = 0;
                 unsafe
                 {
+                    var buffer = _spawnBufferManager.GetBuffer(graph);
                     var handle = new FillSpawnBufferJob
                     {
                         SpawnData = spawnData.AsArray(),
-                        Buffer = buffer.LockBufferForWrite<ParticleInitData>(0, bufferSize),
-                        Hash = hash,
-                        Counter = counter.GetUnsafePtr()
+                        Buffer = buffer.Lock(),
+                        Hash = _hashLookup[graph],
+                        Counter = buffer.GetCounterPtr()
                     }.Schedule(spawnData.Length, 64);
 
                     handles = JobHandle.CombineDependencies(handles, handle);
+                    _processNextFrame.Enqueue(buffer);
                 }
-
-                spawnData.Dispose(handles);
-
             }
+            spawnData.Dispose(handles);
 
             _handles = JobHandle.CombineDependencies(handles, _handles);
-            _spawnBufferLocked = true;
         }
 
         public void FillKillBuffer(ref NativeList<RawParticleKillData> killData)
         {
             var handles = new JobHandle();
 
-            foreach (var (hash, buffer) in _killBufferLookup)
+            foreach (var graph in _killGraphs)
             {
-                var counter = _killBufferSize[hash];
-                counter.Value = 0;
+                var buffer = _killBufferManager.GetBuffer(graph);
                 unsafe
                 {
                     var handle = new FillKillBufferJob
                     {
                         KillData = killData.AsArray(),
-                        Buffer = buffer.LockBufferForWrite<ParticleKillData>(0, bufferSize),
-                        Hash = hash,
-                        Counter = counter.GetUnsafePtr()
+                        Buffer = buffer.Lock(),
+                        Hash = _hashLookup[graph],
+                        Counter = buffer.GetCounterPtr()
                     }.Schedule(killData.Length, 64);
+                    _processThisFrame.Enqueue(buffer);
 
-                    handles = JobHandle.CombineDependencies(handles, handle);    
+                    handles = JobHandle.CombineDependencies(handles, handle);
                 }
             }
 
+            killData.Dispose(handles);
+
             _handles = JobHandle.CombineDependencies(handles, _handles);
-            _killBufferLocked = true;
         }
 
         [BurstCompile]
@@ -237,7 +200,7 @@ namespace ECS.Managed.VFX
                             Size = spawn.Size,
                             Position = spawn.Position,
                             Velocity = spawn.Velocity,
-                            Id = (uint)spawn.ParticleId.Index,
+                            Id = spawn.ParticleId,
                             Angle = spawn.Angle
                         };
                     }
@@ -268,7 +231,7 @@ namespace ECS.Managed.VFX
                         int i = Interlocked.Increment(ref *Counter) - 1;
                         Buffer[i] = new ParticleKillData
                         {
-                            Id = (uint)kill.ParticleId.Index
+                            Id = kill.ParticleId
                         };
                     }
                 }

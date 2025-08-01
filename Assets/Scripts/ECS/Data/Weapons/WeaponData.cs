@@ -15,6 +15,7 @@ namespace ECS.Data.Weapons
         public float Damage;
         public HitboxType Hitbox;
         public LayerMask HitboxLayer;
+        public LayerMask CollisionLayer;
         public float HitboxSize;
     }
 }
